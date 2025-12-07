@@ -1,13 +1,16 @@
-package com.example.pushupcounter
+package ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.pushupcounter.R
 import logic.PushupSensor
 
 class CounterFragment : Fragment() {
@@ -54,6 +57,7 @@ class CounterFragment : Fragment() {
 
             if (isTracking) {
                 showTrackingUi()
+                pushupCountText.setTextColor(Color.GREEN)
             } else if (pushupCount > 0) {
                 showResultUi()
             }
@@ -62,6 +66,16 @@ class CounterFragment : Fragment() {
         pushupSensor.setListener(object : PushupSensor.PushupListener {
             override fun onPushup() {
                 updateCount()
+            }
+
+            override fun onSensorStateChanged(currentLux: Float, isShadow: Boolean) {
+                if (isShadow) {
+                    pushupCountText.setTextColor(Color.RED)
+                } else {
+                    pushupCountText.setTextColor(Color.GREEN)
+                }
+                startText.text = "Свет: ${currentLux.toInt()} lx"
+                startText.visibility = View.VISIBLE
             }
         })
 
@@ -82,12 +96,14 @@ class CounterFragment : Fragment() {
         super.onResume()
         if (isTracking) {
             pushupSensor.start()
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
     override fun onPause() {
         super.onPause()
         pushupSensor.stop()
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -100,6 +116,9 @@ class CounterFragment : Fragment() {
         pushupCount = 0
         isTracking = true
         pushupCountText.text = pushupCount.toString()
+        pushupCountText.setTextColor(Color.GREEN)
+
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         pushupSensor.start()
         showTrackingUi()
     }
@@ -107,6 +126,7 @@ class CounterFragment : Fragment() {
     private fun stopTracking() {
         isTracking = false
         pushupSensor.stop()
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         showResultUi()
     }
 
@@ -119,7 +139,10 @@ class CounterFragment : Fragment() {
         pushupCountText.visibility = View.VISIBLE
         stopButton.visibility = View.VISIBLE
         startButton.visibility = View.GONE
-        startText.visibility = View.GONE
+
+        startText.visibility = View.VISIBLE
+        startText.textSize = 20f
+
         resultText.visibility = View.GONE
         restartText.visibility = View.GONE
         restartButton.visibility = View.GONE
@@ -128,6 +151,8 @@ class CounterFragment : Fragment() {
     private fun showResultUi() {
         stopButton.visibility = View.GONE
         pushupCountText.visibility = View.GONE
+        startText.visibility = View.GONE
+
         resultText.text = "Ваш результат: $pushupCount раз"
         resultText.visibility = View.VISIBLE
         restartText.visibility = View.VISIBLE
@@ -139,7 +164,11 @@ class CounterFragment : Fragment() {
         restartText.visibility = View.GONE
         restartButton.visibility = View.GONE
         startButton.visibility = View.VISIBLE
+
+        startText.text = getString(R.string.start_count)
+        startText.textSize = 32f
         startText.visibility = View.VISIBLE
+
         pushupCount = 0
         pushupCountText.text = "0"
         pushupCountText.visibility = View.GONE

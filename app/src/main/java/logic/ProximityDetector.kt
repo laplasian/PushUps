@@ -10,22 +10,28 @@ class PushupSensor(context: Context) : SensorEventListener {
 
     interface PushupListener {
         fun onPushup()
+        fun onSensorStateChanged(currentLux: Float, isShadow: Boolean)
     }
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val proximitySensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
+
+    private val lightSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
     private var listener: PushupListener? = null
     private var isPositionDown = false
+
+    private var baseLux: Float = 0f
 
     fun setListener(listener: PushupListener) {
         this.listener = listener
     }
 
     fun start() {
-        proximitySensor?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        lightSensor?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
         }
         isPositionDown = false
+        baseLux = 0f
     }
 
     fun stop() {
@@ -33,16 +39,26 @@ class PushupSensor(context: Context) : SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event == null) return
+        if (event == null || lightSensor == null) return
 
-        if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
-            val distance = event.values[0]
-            val maxRange = proximitySensor?.maximumRange ?: 5f
-            val isNear = distance < maxRange
+        if (event.sensor.type == Sensor.TYPE_LIGHT) {
+            val currentLux = event.values[0]
 
-            if (isNear && !isPositionDown) {
+            if (baseLux == 0f) {
+                baseLux = currentLux
+                return
+            }
+
+            val shadowThreshold = baseLux * 0.5f
+            val lightThreshold = baseLux * 0.8f
+
+            val isShadow = currentLux < shadowThreshold
+
+            listener?.onSensorStateChanged(currentLux, isShadow)
+
+            if (isShadow && !isPositionDown) {
                 isPositionDown = true
-            } else if (!isNear && isPositionDown) {
+            } else if (currentLux > lightThreshold && isPositionDown) {
                 isPositionDown = false
                 listener?.onPushup()
             }

@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/counterFragment"
-        android:name="com.example.pushupcounter.CounterFragment"
+        android:name="ui.CounterFragment"
         android:label="Counter" />
 
     <fragment
