@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.pushupcounter.MainFragment"
+        android:label="Main">
+
+        <action
+            android:id="@+id/action_main_to_counter"
+            app:destination="@id/counterFragment" />
+
+        <action
+            android:id="@+id/action_main_to_settings"
+            app:destination="@id/settingsFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/counterFragment"
+        android:name="com.example.pushupcounter.CounterFragment"
+        android:label="Counter" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.pushupcounter.SettingsFragment"
+        android:label="Settings" />
+
+</navigation>

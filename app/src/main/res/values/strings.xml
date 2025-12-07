@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">PushUps</string>
+    <string name="app_name">PushupCounter</string>
+    <string name="counter">Счётчик</string>
+    <string name="start_count">Начать</string>
+    <string name="stop">Стоп</string>
+    <string name="restart">Начать заново</string>
+    <string name="pushup_counter">Счётчик отжиманий</string>
+    <string name="start">Начать</string>
+    <string name="stats">Статистика</string>
+    <string name="settings">Настройки</string>
+    <string name="settings_2">Настройки</string>
+    <string name="sfx">Звук</string>
+    <string name="ring">С озвучкой</string>
+    <string name="silent">Бесшумный</string>
+    <string name="volume">Громкость</string>
+    <string name="returnToMenu1">Назад</string>
+
 </resources>

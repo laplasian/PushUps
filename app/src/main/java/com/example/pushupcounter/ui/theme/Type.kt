@@ -1,4 +1,4 @@
-package com.example.pushups.ui.theme
+package com.example.pushupcounter.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
