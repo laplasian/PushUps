@@ -1,4 +1,4 @@
-package com.example.pushups
+package com.example.pushupсounter
 
 import org.junit.Test
 
