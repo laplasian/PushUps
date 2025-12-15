@@ -12,6 +12,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.pushupcounter.R
 import logic.PushupSensor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 class CounterFragment : Fragment() {
 
@@ -36,7 +40,7 @@ class CounterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         pushupSensor = PushupSensor(requireContext())
-        return inflater.inflate(R.layout.activity_counter, container, false)
+        return inflater.inflate(R.layout.counter_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -142,6 +146,13 @@ class CounterFragment : Fragment() {
         isTracking = false
         pushupSensor.stop()
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        val db = database.AppDatabase.get(requireContext())
+        val stat = database.StatsEntity(date = System.currentTimeMillis(), pushups = pushupCount)
+        CoroutineScope(Dispatchers.IO).launch {
+            db.statsDao().insert(stat)
+        }
+
         showResultUi()
     }
 

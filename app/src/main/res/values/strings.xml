@@ -15,5 +15,6 @@
     <string name="volume">Громкость</string>
     <string name="returnToMenu1">Назад</string>
     <string name="return_to_menu1">В меню</string>
+    <string name="stats_main">Статистика</string>
 
 </resources>

@@ -16,7 +16,7 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.activity_main, container, false)
+        return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,6 +29,7 @@ class MainFragment : Fragment() {
         }
 
         statsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_main_to_stats)
         }
 
         settingsButton.setOnClickListener {

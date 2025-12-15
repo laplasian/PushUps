@@ -17,6 +17,10 @@
             android:id="@+id/action_main_to_settings"
             app:destination="@id/settingsFragment" />
 
+        <action
+            android:id="@+id/action_main_to_stats"
+            app:destination="@id/statsFragment" />
+
     </fragment>
 
     <fragment
@@ -28,5 +32,10 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.pushupcounter.SettingsFragment"
         android:label="Settings" />
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="ui.StatsFragment"
+        android:label="Statistics" />
 
 </navigation>
