@@ -17,17 +17,18 @@ class CounterFragment : Fragment() {
 
     private var pushupCount = 0
     private var isTracking = false
-
     private lateinit var pushupSensor: PushupSensor
-
     private lateinit var pushupCountText: TextView
     private lateinit var startText: TextView
     private lateinit var startButton: ImageButton
     private lateinit var stopButton: Button
-
     private lateinit var resultText: TextView
     private lateinit var restartText: TextView
     private lateinit var restartButton: ImageButton
+    private lateinit var stopSpacer: View
+    private lateinit var resultContainer: View
+    private lateinit var menuButtonStart: Button
+    private lateinit var menuButtonResult: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +50,12 @@ class CounterFragment : Fragment() {
         resultText = view.findViewById(R.id.resultText)
         restartText = view.findViewById(R.id.restartText)
         restartButton = view.findViewById(R.id.restartButton)
+
+        stopSpacer = view.findViewById(R.id.stopSpacer)
+        resultContainer = view.findViewById(R.id.resultContainer)
+
+        menuButtonStart = view.findViewById(R.id.menuButtonStart)
+        menuButtonResult = view.findViewById(R.id.menuButtonResult)
 
         if (savedInstanceState != null) {
             pushupCount = savedInstanceState.getInt("PUSHUP_COUNT", 0)
@@ -89,6 +96,14 @@ class CounterFragment : Fragment() {
 
         restartButton.setOnClickListener {
             resetUi()
+        }
+
+        menuButtonStart.setOnClickListener {
+            goToMenu()
+        }
+
+        menuButtonResult.setOnClickListener {
+            goToMenu()
         }
     }
 
@@ -137,33 +152,34 @@ class CounterFragment : Fragment() {
 
     private fun showTrackingUi() {
         pushupCountText.visibility = View.VISIBLE
-        stopButton.visibility = View.VISIBLE
         startButton.visibility = View.GONE
+        menuButtonStart.visibility = View.GONE
+
+        stopSpacer.visibility = View.VISIBLE
+        stopButton.visibility = View.VISIBLE
 
         startText.visibility = View.VISIBLE
         startText.textSize = 20f
 
-        resultText.visibility = View.GONE
-        restartText.visibility = View.GONE
-        restartButton.visibility = View.GONE
+        resultContainer.visibility = View.GONE
     }
 
     private fun showResultUi() {
+        stopSpacer.visibility = View.GONE
         stopButton.visibility = View.GONE
+
         pushupCountText.visibility = View.GONE
         startText.visibility = View.GONE
 
         resultText.text = "Ваш результат: $pushupCount раз"
-        resultText.visibility = View.VISIBLE
-        restartText.visibility = View.VISIBLE
-        restartButton.visibility = View.VISIBLE
+        resultContainer.visibility = View.VISIBLE
     }
 
     private fun resetUi() {
-        resultText.visibility = View.GONE
-        restartText.visibility = View.GONE
-        restartButton.visibility = View.GONE
+        resultContainer.visibility = View.GONE
+
         startButton.visibility = View.VISIBLE
+        menuButtonStart.visibility = View.VISIBLE
 
         startText.text = getString(R.string.start_count)
         startText.textSize = 32f
@@ -172,5 +188,9 @@ class CounterFragment : Fragment() {
         pushupCount = 0
         pushupCountText.text = "0"
         pushupCountText.visibility = View.GONE
+    }
+
+    private fun goToMenu() {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 }

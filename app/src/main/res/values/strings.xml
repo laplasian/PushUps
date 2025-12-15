@@ -14,5 +14,6 @@
     <string name="silent">Бесшумный</string>
     <string name="volume">Громкость</string>
     <string name="returnToMenu1">Назад</string>
+    <string name="return_to_menu1">В меню</string>
 
 </resources>
