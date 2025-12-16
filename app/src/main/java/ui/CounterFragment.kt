@@ -1,6 +1,7 @@
 package ui
 
 import android.graphics.Color
+import android.media.MediaPlayer // Добавлено
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,15 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.pushupcounter.R
 import logic.PushupSensor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -33,6 +37,9 @@ class CounterFragment : Fragment() {
     private lateinit var resultContainer: View
     private lateinit var menuButtonStart: Button
     private lateinit var menuButtonResult: Button
+
+    private lateinit var animeOverlay: ImageView
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,6 +67,8 @@ class CounterFragment : Fragment() {
 
         menuButtonStart = view.findViewById(R.id.menuButtonStart)
         menuButtonResult = view.findViewById(R.id.menuButtonResult)
+
+        animeOverlay = view.findViewById(R.id.animeOverlay)
 
         if (savedInstanceState != null) {
             pushupCount = savedInstanceState.getInt("PUSHUP_COUNT", 0)
@@ -123,6 +132,14 @@ class CounterFragment : Fragment() {
         super.onPause()
         pushupSensor.stop()
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -147,6 +164,8 @@ class CounterFragment : Fragment() {
         pushupSensor.stop()
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        animeOverlay.visibility = View.GONE
+
         val db = database.AppDatabase.get(requireContext())
         val stat = database.StatsEntity(date = System.currentTimeMillis(), pushups = pushupCount)
         CoroutineScope(Dispatchers.IO).launch {
@@ -159,6 +178,40 @@ class CounterFragment : Fragment() {
     private fun updateCount() {
         pushupCount++
         pushupCountText.text = pushupCount.toString()
+
+        checkAndPlayReward()
+    }
+
+    private fun checkAndPlayReward() {
+        if (pushupCount % 10 == 0) {
+            showAnimeEffect(R.drawable.g_10, R.raw.a_sound)
+
+        } else if (pushupCount % 5 == 0) {
+            showAnimeEffect(R.drawable.g_5, R.raw.a_sound)
+        }
+    }
+
+    private fun showAnimeEffect(imageResId: Int, soundResId: Int) {
+        mediaPlayer?.release()
+
+        animeOverlay.setImageResource(imageResId)
+        animeOverlay.visibility = View.VISIBLE
+
+        try {
+            mediaPlayer = MediaPlayer.create(context, soundResId)
+            mediaPlayer?.start()
+            mediaPlayer?.setOnCompletionListener {
+                it.release()
+                mediaPlayer = null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        lifecycleScope.launch {
+            delay(1500)
+            animeOverlay.visibility = View.GONE
+        }
     }
 
     private fun showTrackingUi() {
@@ -208,6 +261,8 @@ class CounterFragment : Fragment() {
         startText.text = getString(R.string.start_count)
         startText.textSize = 32f
         startText.visibility = View.VISIBLE
+
+        animeOverlay.visibility = View.GONE
 
         pushupCount = 0
         pushupCountText.text = "0"
