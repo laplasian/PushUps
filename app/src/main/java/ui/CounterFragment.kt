@@ -1,7 +1,7 @@
 package ui
 
 import android.graphics.Color
-import android.media.MediaPlayer // Добавлено
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -192,20 +192,30 @@ class CounterFragment : Fragment() {
     }
 
     private fun showAnimeEffect(imageResId: Int, soundResId: Int) {
+        val prefs = requireActivity().getSharedPreferences("AppPrefs", android.content.Context.MODE_PRIVATE)
+        val isSoundOn = prefs.getBoolean("SOUND_ENABLED", true)
+        val volumeLevel = prefs.getInt("VOLUME_LEVEL", 50)
+
         mediaPlayer?.release()
 
         animeOverlay.setImageResource(imageResId)
         animeOverlay.visibility = View.VISIBLE
 
-        try {
-            mediaPlayer = MediaPlayer.create(context, soundResId)
-            mediaPlayer?.start()
-            mediaPlayer?.setOnCompletionListener {
-                it.release()
-                mediaPlayer = null
+        if (isSoundOn) {
+            try {
+                mediaPlayer = MediaPlayer.create(context, soundResId)
+
+                val volumeFloat = volumeLevel / 100f
+                mediaPlayer?.setVolume(volumeFloat, volumeFloat)
+
+                mediaPlayer?.start()
+                mediaPlayer?.setOnCompletionListener {
+                    it.release()
+                    mediaPlayer = null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
 
         lifecycleScope.launch {
