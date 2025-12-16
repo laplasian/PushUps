@@ -42,6 +42,18 @@ class StatsFragment : Fragment() {
         }
     }
 
+    private fun pushupsWord(count: Int): String {
+        return if (count % 100 in 11..14) {
+            "отжиманий"
+        } else {
+            when (count % 10) {
+                1 -> "отжимание"
+                2, 3, 4 -> "отжимания"
+                else -> "отжиманий"
+            }
+        }
+    }
+
     private fun loadStats() {
         val db = AppDatabase.get(requireContext())
         CoroutineScope(Dispatchers.Main).launch {
@@ -63,7 +75,9 @@ class StatsFragment : Fragment() {
 
                 records.sortedBy { it.date }.forEach { record ->
                     val recordText = TextView(requireContext()).apply {
-                        text = "${sdfDate.format(Date(record.date))} – ${record.pushups} отжиманий"
+                        val word = pushupsWord(record.pushups)
+
+                        text = "${sdfDate.format(Date(record.date))} – ${record.pushups} $word"
                         setTextColor(Color.GREEN)
                         textSize = 18f
                         setPadding(16,4,0,4)

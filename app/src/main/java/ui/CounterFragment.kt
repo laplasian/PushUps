@@ -175,6 +175,18 @@ class CounterFragment : Fragment() {
         resultContainer.visibility = View.GONE
     }
 
+    private fun getTimesWord(count: Int): String {
+        return if (count % 100 in 11..14) {
+            "раз"
+        } else if (count % 10 == 1) {
+            "раз"
+        } else if (count % 10 in 2..4) {
+            "раза"
+        } else {
+            "раз"
+        }
+    }
+
     private fun showResultUi() {
         stopSpacer.visibility = View.GONE
         stopButton.visibility = View.GONE
@@ -182,7 +194,8 @@ class CounterFragment : Fragment() {
         pushupCountText.visibility = View.GONE
         startText.visibility = View.GONE
 
-        resultText.text = "Ваш результат: $pushupCount раз"
+        val word = getTimesWord(pushupCount)
+        resultText.text = "Ваш результат: $pushupCount $word"
         resultContainer.visibility = View.VISIBLE
     }
 
